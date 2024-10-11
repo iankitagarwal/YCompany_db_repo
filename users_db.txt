@@ -1,0 +1,76 @@
+// Use DBML to define your database structure
+// Docs: https://dbml.dbdiagram.io/docs
+
+Table users {
+  user_id integer [primary key]
+  username varchar
+  is_internal_user boolean
+  email varchar
+  mobile_number varchar
+  address1 varchar
+  address2 varchar
+  city_id varchar
+  state_id integer
+  country_id integer
+  zipcode1 varchar
+  zipcode2 varchar 
+  created_at timestamp
+  updated_at timestamp
+  created_by varchar
+  updated_by varchar
+}
+
+Table roles {
+  role_id integer [primary key]
+  rolename varchar
+}
+
+Table user_role_mapping{
+  user_role_mapping_id integer
+  user_id integer
+  role_id integer
+  created_at timestamp
+  updated_at timestamp
+  created_by varchar
+  updated_by varchar
+}
+
+Table country{
+  country_id integer
+  country_code varchar
+  country_name varchar
+  created_at timestamp
+}
+
+Table state{
+  state_id integer
+  state_code varchar
+  state_name varchar
+  country_id integer
+  created_at timestamp
+}
+
+Table city{
+  city_id integer
+  city_code varchar
+  city_name varchar
+  state_id integer
+  country_id integer
+  created_at timestamp
+}
+
+
+
+Ref: users.user_id < country.country_id
+Ref: users.user_id < state.state_id
+Ref: users.user_id < city.city_id
+
+Ref: country.country_id > state.state_id
+Ref: state.state_id > city.city_id
+
+
+
+
+Ref: "city"."state_id" < "city"."created_at"
+
+Ref: "country"."country_code" < "country"."country_id"
