@@ -14,6 +14,7 @@ Table users {
   country_id integer
   zipcode1 varchar
   zipcode2 varchar 
+  active boolean
   created_at timestamp
   updated_at timestamp
   created_by varchar
@@ -60,10 +61,47 @@ Table city{
 }
 
 
+Table policy{
+  policy_id integer
+  policy_name varchar
+  country_id integer
+  state_id integer
+  policy_duration varchar
+  active boolean
+  policy_type_id integer
+  created_at timestamp
+  updated_at timestamp
+  created_by varchar
+  updated_by varchar
+}
 
-Ref: users.user_id < country.country_id
-Ref: users.user_id < state.state_id
-Ref: users.user_id < city.city_id
+Table policy_types{
+  policy_type_id integer
+  policy_type_name varchar
+}
+
+Table policy_document_links {
+  policy_document_links_id integer
+  policy_id integer
+  document_link varchar
+}
+Table workshop{
+  workshop_id integer
+  workshop_name varchar
+  address1 varchar
+  address2 varchar
+  country_id integer
+  state_id integer
+  city_id integer
+  is_partner_workshop boolean
+}
+
+
+Ref: policy.policy_id < country.country_id
+Ref: policy.policy_id < state.state_id
+Ref: policy.policy_id < city.city_id
+Ref: policy.policy_id > policy_types.policy_type_id
+Ref: policy.policy_id < policy_document_links.policy_document_links_id
 
 Ref: country.country_id > state.state_id
 Ref: state.state_id > city.city_id
