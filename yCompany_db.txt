@@ -21,6 +21,32 @@ Table users {
   updated_by varchar
 }
 
+Table vehicles{
+  vehicle_id integer [primary key]
+  user_id integer [ref: > users.user_id]
+  vehicle_type_id integer [unique, ref: - vehicle_type.vehicle_type_id]
+  registration_number varchar
+  registration_date date
+  owner_name varchar
+  engine_type_id integer [unique, ref: - engine_type.engine_type_id]
+  owner_type_id integer [unique, ref: - owner_type.owner_type_id]
+} 
+
+Table vehicle_type{
+  vehicle_type_id integer
+  type varchar
+}
+
+Table engine_type{
+  engine_type_id integer
+  type varchar
+}
+
+Table owner_type{
+  owner_type_id integer
+  type varchar
+}
+
 Table roles {
   role_id integer [primary key]
   rolename varchar
@@ -34,6 +60,18 @@ Table user_role_mapping{
   updated_at timestamp
   created_by varchar
   updated_by varchar
+}
+
+Table user_policies{
+  user_policy_id integer
+  user_id integer [ref: > users.user_id]
+  policy_id integer
+  start_date date
+  end_date date
+  last_activation_date date
+  is_renewed boolean
+  active boolean
+  nominee_detail_id
 }
 
 Table country{
