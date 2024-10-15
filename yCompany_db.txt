@@ -23,6 +23,7 @@ Table users {
 
 Table vehicles{
   vehicle_id integer [primary key]
+  model varchar
   user_id integer [ref: > users.user_id]
   vehicle_type_id integer [unique, ref: - vehicle_type.vehicle_type_id]
   registration_number varchar
@@ -65,13 +66,15 @@ Table user_role_mapping{
 Table user_policies{
   user_policy_id integer
   user_id integer [ref: > users.user_id]
+  vehicle_id integer [unique, ref: - vehicles.vehicle_id]
   policy_id integer
+  policy_number varchar
   start_date date
   end_date date
   last_activation_date date
   is_renewed boolean
   active boolean
-  nominee_detail_id
+  last_policy_number varchar
 }
 
 Table country{
@@ -85,7 +88,7 @@ Table state{
   state_id integer
   state_code varchar
   state_name varchar
-  country_id integer
+  country_id integer [ref: > country.country_id]
   created_at timestamp
 }
 
@@ -93,8 +96,8 @@ Table city{
   city_id integer
   city_code varchar
   city_name varchar
-  state_id integer
-  country_id integer
+  state_id integer [ref: > state.state_id]
+  country_id integer [ref: > country.country_id]
   created_at timestamp
 }
 
@@ -102,8 +105,8 @@ Table city{
 Table policy{
   policy_id integer
   policy_name varchar
-  country_id integer
-  state_id integer
+  country_id integer [ref: > country.country_id]
+  state_id integer [ref: > state.state_id]
   policy_duration varchar
   active boolean
   policy_type_id integer
@@ -115,12 +118,13 @@ Table policy{
 
 Table policy_types{
   policy_type_id integer
+  policy_id integer [unique, ref: - policy.policy_id]
   policy_type_name varchar
 }
 
 Table policy_document_links {
   policy_document_links_id integer
-  policy_id integer
+  policy_id integer [ref: > policy.policy_id]
   document_link varchar
 }
 Table workshop{
@@ -134,12 +138,24 @@ Table workshop{
   is_partner_workshop boolean
 }
 
+Table car_rental_partner{
+  car_rental_partner_id integer
+  car_rental_partner_name varchar
+  address1 varchar
+  address2 varchar
+  country_id integer
+  state_id integer
+  city_id integer
+}
 
-Ref: policy.policy_id < country.country_id
-Ref: policy.policy_id < state.state_id
-Ref: policy.policy_id < city.city_id
-Ref: policy.policy_id > policy_types.policy_type_id
-Ref: policy.policy_id < policy_document_links.policy_document_links_id
-
-Ref: country.country_id > state.state_id
-Ref: state.state_id > city.city_id
+Table rental_cars{
+  rental_car_id integer
+  model varchar
+  car_rental_partner_id integer [ref: > car_rental_partner.car_rental_partner_id]
+  engine_type_id integer [unique, ref: - engine_type.engine_type_id]
+  vehicle_type_id integer [unique, ref: - vehicle_type.vehicle_type_id]
+  rent_per_day decimal
+  is_available boolean
+  start_date timestamp
+  end_date timestamp
+}
