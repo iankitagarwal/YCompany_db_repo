@@ -207,6 +207,13 @@ Table claim_details{
   created_date timestamp
 }
 
+Table claim_fraudlent_detail {
+  claim_fraudlent_detail_id integer [primary key]
+  claim_id bigint [ref: - claims.claim_id]
+  ai_llm_id integer 
+  details varchar
+}
+
 Table claim_workshop_mapping {
   claim_workshop_mapping_id bigint [primary key]
   claim_id bigint [ref: - claims.claim_id]
