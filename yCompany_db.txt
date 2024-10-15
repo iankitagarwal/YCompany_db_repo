@@ -207,12 +207,7 @@ Table claim_details{
   created_date timestamp
 }
 
-Table claim_fraudlent_detail {
-  claim_fraudlent_detail_id integer [primary key]
-  claim_id bigint [ref: - claims.claim_id]
-  ai_llm_id integer 
-  details varchar
-}
+
 
 Table claim_workshop_mapping {
   claim_workshop_mapping_id bigint [primary key]
@@ -222,12 +217,23 @@ Table claim_workshop_mapping {
   comments varchar
   reasonForDelay varchar
   total_amount decimal
+  total_approved_amount decimal
   extra_amount decimal
+  is_workorder_sent_to_insurer boolean
   is_repair_done boolean
   is_user_notified boolean
   is_insurer_notified boolean
   is_payment_done_by_insurer boolean
   is_extra_payment_done_by_user boolean
+}
+
+
+Table workshop_workorder_details{
+  workshop_workorder_detail_id bigint [primary key]
+  claim_workshop_mapping_id bigint [ref: > claim_workshop_mapping.claim_workshop_mapping_id]
+  item_name varchar
+  item_price decimal
+
 }
 
 Table claim_extra_payment_detail {
@@ -238,14 +244,13 @@ Table claim_extra_payment_detail {
   is_payment_done boolean
   payment_date timestamp
 }
-Table workshop_workorder_details{
-  workshop_workorder_detail_id bigint [primary key]
-  claim_workshop_mapping_id bigint [ref: > claim_workshop_mapping.claim_workshop_mapping_id]
-  item_name varchar
-  item_price decimal
 
+Table claim_fraudlent_detail {
+  claim_fraudlent_detail_id integer [primary key]
+  claim_id bigint [ref: - claims.claim_id]
+  ai_llm_id integer 
+  details varchar
 }
-
 
 Table status{
   status_id int [primary key]
@@ -257,4 +262,18 @@ Table payment_type_details{
   type varchar
   payment_source_url varchar
   callback_url varchar
+}
+
+Table report_type{
+  report_type_id integer [primary key]
+  type varchar
+  available_for_roles varchar [ref: > roles.rolename]
+}
+
+Table report_details{
+  report_details_id integer [primary key]
+  report_type_id integer [ref: > report_type.report_type_id]
+  is_report_generated boolean
+  created_by integer [ref : > users.user_id]
+  created_on timestamp
 }
