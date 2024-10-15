@@ -132,9 +132,9 @@ Table workshop{
   workshop_name varchar
   address1 varchar
   address2 varchar
-  country_id integer
-  state_id integer
-  city_id integer
+  country_id integer [ref: - country.country_id]
+  state_id integer [ref: - state.state_id]
+  city_id integer [ref: - city.city_id]
   is_partner_workshop boolean
 }
 
