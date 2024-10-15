@@ -34,17 +34,17 @@ Table vehicles{
 } 
 
 Table vehicle_type{
-  vehicle_type_id integer
+  vehicle_type_id integer [primary key]
   type varchar
 }
 
 Table engine_type{
-  engine_type_id integer
+  engine_type_id integer [primary key]
   type varchar
 }
 
 Table owner_type{
-  owner_type_id integer
+  owner_type_id integer [primary key]
   type varchar
 }
 
@@ -54,7 +54,7 @@ Table roles {
 }
 
 Table user_role_mapping{
-  user_role_mapping_id integer
+  user_role_mapping_id integer [primary key]
   user_id integer
   role_id integer
   created_at timestamp
@@ -64,7 +64,7 @@ Table user_role_mapping{
 }
 
 Table user_policies{
-  user_policy_id integer
+  user_policy_id integer [primary key]
   user_id integer [ref: > users.user_id]
   vehicle_id integer [unique, ref: - vehicles.vehicle_id]
   policy_id integer
@@ -77,15 +77,16 @@ Table user_policies{
   last_policy_number varchar
 }
 
+
 Table country{
-  country_id integer
+  country_id integer [primary key]
   country_code varchar
   country_name varchar
   created_at timestamp
 }
 
 Table state{
-  state_id integer
+  state_id integer [primary key]
   state_code varchar
   state_name varchar
   country_id integer [ref: > country.country_id]
@@ -93,7 +94,7 @@ Table state{
 }
 
 Table city{
-  city_id integer
+  city_id integer [primary key]
   city_code varchar
   city_name varchar
   state_id integer [ref: > state.state_id]
@@ -103,13 +104,16 @@ Table city{
 
 
 Table policy{
-  policy_id integer
+  policy_id integer [primary key]
   policy_name varchar
   country_id integer [ref: > country.country_id]
   state_id integer [ref: > state.state_id]
   policy_duration varchar
   active boolean
   policy_type_id integer
+  is_car_rental_included boolean
+  policy_min_amount_approved decimal
+  policy_max_amount_approved decimal
   created_at timestamp
   updated_at timestamp
   created_by varchar
@@ -117,18 +121,18 @@ Table policy{
 }
 
 Table policy_types{
-  policy_type_id integer
+  policy_type_id integer [primary key]
   policy_id integer [unique, ref: - policy.policy_id]
   policy_type_name varchar
 }
 
 Table policy_document_links {
-  policy_document_links_id integer
+  policy_document_links_id integer [primary key]
   policy_id integer [ref: > policy.policy_id]
   document_link varchar
 }
 Table workshop{
-  workshop_id integer
+  workshop_id integer [primary key]
   workshop_name varchar
   address1 varchar
   address2 varchar
@@ -139,7 +143,7 @@ Table workshop{
 }
 
 Table car_rental_partner{
-  car_rental_partner_id integer
+  car_rental_partner_id integer [primary key]
   car_rental_partner_name varchar
   address1 varchar
   address2 varchar
@@ -149,7 +153,7 @@ Table car_rental_partner{
 }
 
 Table rental_cars{
-  rental_car_id integer
+  rental_car_id integer [primary key]
   model varchar
   car_rental_partner_id integer [ref: > car_rental_partner.car_rental_partner_id]
   engine_type_id integer [unique, ref: - engine_type.engine_type_id]
@@ -158,4 +162,92 @@ Table rental_cars{
   is_available boolean
   start_date timestamp
   end_date timestamp
+}
+
+
+Table user_rental_car_detail{
+  user_rental_car_detail_id integer [primary key]
+  user_id integer [ref: > users.user_id]
+  vehcile_id integer [unique, ref: - vehicles.vehicle_id]
+  rental_car_id integer [unique, ref: - rental_cars.rental_car_id]
+  start_date timestamp
+  end_date timestamp
+}
+
+Table claims{
+  claim_id bigint [primary key]
+  user_id integer [ref: > users.user_id]
+  policy_id integer [ref: - policy.policy_id]
+  vehicle_id integer [ref: - vehicles.vehicle_id]
+  current_status varchar [ref: - status.status]
+  current_assigner integer [ref: - users.user_id]
+  case_manager_id integer [ref: - users.user_id]
+  is_approved boolean
+  is_partner_workshop_opted boolean
+  claim_submission_date date
+  claim_approval_date date
+  claim_rejection_date date
+  total_approved_amount decimal
+  comments varchar
+  created_at timestamp
+  updated_at timestamp
+  created_by varchar
+  updated_by varchar
+}
+
+Table claim_details{
+  claim_detail_id bigint [primary key]
+  claim_id bigint [ref: > claims.claim_id]
+  document_link varchar 
+  status varchar [ref: - status.status]
+  action_date date
+  assigner integer [ref: - users.user_id]
+  comments varchar
+  uploaded_by integer [ref: > users.user_id]
+  created_date timestamp
+}
+
+Table claim_workshop_mapping {
+  claim_workshop_mapping_id bigint [primary key]
+  claim_id bigint [ref: - claims.claim_id]
+  workshop_id integer [ref: - workshop.workshop_id]
+  current_status varchar [ref: - status.status]
+  comments varchar
+  reasonForDelay varchar
+  total_amount decimal
+  extra_amount decimal
+  is_repair_done boolean
+  is_user_notified boolean
+  is_insurer_notified boolean
+  is_payment_done_by_insurer boolean
+  is_extra_payment_done_by_user boolean
+}
+
+Table claim_extra_payment_detail {
+  claim_extra_payment_detail_id bigint [primary key]
+  claim_id bigint [ref: - claims.claim_id]
+  user_id integer [ref: > users.user_id]
+  payment_type_id integer [ref: - payment_type_details.payment_type_details_id]
+  is_payment_done boolean
+  payment_date timestamp
+}
+Table workshop_workorder_details{
+  workshop_workorder_detail_id bigint [primary key]
+  claim_workshop_mapping_id bigint [ref: > claim_workshop_mapping.claim_workshop_mapping_id]
+  item_name varchar
+  item_price decimal
+
+}
+
+
+Table status{
+  status_id int [primary key]
+  status varchar
+}
+
+Table payment_type_details{
+  payment_type_details_id integer [primary key]
+  type varchar
+  payment_source_url varchar
+  callback_url varchar
 }
