@@ -55,8 +55,8 @@ Table roles {
 
 Table user_role_mapping{
   user_role_mapping_id integer [primary key]
-  user_id integer
-  role_id integer
+  user_id integer [ref : > users.user_id]
+  role_id integer [unique, ref: - roles.role_id]
   created_at timestamp
   updated_at timestamp
   created_by varchar
